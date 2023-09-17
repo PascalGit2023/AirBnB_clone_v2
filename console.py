@@ -129,7 +129,7 @@ class HBNBCommand(cmd.Cmd):
         """<class name>.all(), all, all <class name>"""
         objlist = []
         args = tokenize(arg)
-        loadallobj = storage.all()
+        loadallobj = storage.all(eval(args[0]))
         if len(args) >= 1:
             if not args[0] in self.__classes:
                 print("** class doesn't exist **")

@@ -4,11 +4,24 @@ by allsub classes """
 
 from uuid import uuid4
 from datetime import datetime
+from sqlalchemy import *
+from sqlalchemy.orm import *
+from sqlalchemy.ext.declarative import declarative_base
 import models
 
 
+Base = declarative_base()
+
+
 class BaseModel:
-    """ Basmodel for other classes save __str__ new """
+    """ Basmodel for other classes save __str__ new
+    All other classes will inherit from BaseModel to get common
+    values (id, created_at, updated_at), where inheriting from
+    ase will actually cause SQLAlchemy to attempt to map it to a table.
+    """
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     def __init__(self, *args, **kwargs):
         """ initializes the class attributes*arg is an unused variable"""
@@ -35,7 +48,8 @@ class BaseModel:
         """ string representation of the BaseModel intance """
         # clName = self.__class__.__name__
         clName = type(self).__name__
-        str = f"[{clName}] ({self.id}) {self.__dict__}"
+        # str = f"[{clName}] ({self.id}) {self.__dict__}"
+        str = f"[{clName}] ({self.id}) {self.to_dict_db()}"
         return str
 
     def save(self):
@@ -43,6 +57,24 @@ class BaseModel:
         self.updated_at = datetime.utcnow()
         models.storage.new(self)
         models.storage.save()
+
+    def to_dict_db(self):
+        """return all keys and values of the objectinstance from __dict__"""
+        dictcopy = self.__dict__.copy()
+        if type(self.created_at) is str:
+            pass
+            # dictcopy["created_at"] = self.created_at
+        else:
+            dictcopy["created_at"] = self.created_at.isoformat()
+        if type(self.updated_at) is str:
+            pass
+            # dictcopy["updated_at"] = self.updated_at
+        else:
+            dictcopy["updated_at"] = self.updated_at.isoformat()
+
+        if '_sa_instance_state' in dictcopy.keys():
+            del dictcopy['_sa_instance_state']
+        return dictcopy
 
     def to_dict(self):
         """return all keys and values of the objectinstance from __dict__"""
@@ -61,3 +93,7 @@ class BaseModel:
         if '_sa_instance_state' in dictcopy.keys():
             del dictcopy['_sa_instance_state']
         return dictcopy
+
+    def delete(self):
+        """delete the current instance from the storage"""
+        models.storage.delete(self)
