@@ -48,8 +48,8 @@ class BaseModel:
         """ string representation of the BaseModel intance """
         # clName = self.__class__.__name__
         clName = type(self).__name__
-        # str = f"[{clName}] ({self.id}) {self.__dict__}"
-        str = f"[{clName}] ({self.id}) {self.to_dict_db()}"
+        str = f"[{clName}] ({self.id}) {self.__dict__}"
+        # str = f"[{clName}] ({self.id}) {self.to_dict_db()}"
         return str
 
     def save(self):
