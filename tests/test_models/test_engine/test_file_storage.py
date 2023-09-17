@@ -200,10 +200,20 @@ class TestFileStorage_all(unittest.TestCase):
         """ test all type """
         self.assertEqual(dict, type(models.storage.all()))
 
-    def test_all_with_none_parameter(self):
-        """ test all with none arg"""
-        with self.assertRaises(TypeError):
-            models.storage.all(None)
+    def test_all(self):
+        """ __objects is properly returned """
+        new = BaseModel()
+        temp = storage.all()
+        self.assertIsInstance(temp, dict)
+    
+    def test_all_with_parameter(self):
+        """ __objects is properly returned """
+        new = State()
+        new2 = BaseModel()
+        temp = storage.all(cls='State')
+        self.assertIsInstance(temp, dict)
+        temp2 = storage.all(cls='BaseModel')
+        self.assertIsInstance(temp2, dict)
 
     def test_all_method(self):
         """ test_all_method """
